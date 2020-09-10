@@ -66,11 +66,11 @@ And now we are creating a loop that will prompt the GPS position of the ISS ever
 
 ```python
     for i in range(0, 60):
-    date = arrow.utcnow()
-    gps = iss.pos_gps(date)
-    print(date.isoformat())
-    print("ISS longitude: " + str(gps[1]) + "°")
-    print("ISS latitude: " + str(gps[2]) + "°")
-    print("----------------------")
-    time.sleep(1)
+        date = arrow.utcnow()
+        gps = iss.pos_gps(date)
+        print(date.isoformat())
+        print("ISS longitude: " + str(gps[1]) + "°")
+        print("ISS latitude: " + str(gps[2]) + "°")
+        print("----------------------")
+        time.sleep(1)
 ```
