@@ -4,7 +4,9 @@ This package is aimed to track a satellite in orbit around Earth. It has been cr
 
 ## Downloading
 Using `pip`
-`pip install -i https://test.pypi.org/simple/ earthorbit`
+```
+pip install -i https://test.pypi.org/simple/ earthorbit
+```
 
 PyPI link: https://test.pypi.org/project/earthorbit/
 
