@@ -57,7 +57,7 @@ You can also use `requests` Python library to make a HTML GET request to the Cel
     import arrow
     import time
 
-    orb_els = '{"OBJECT_NAME":"ISS (ZARYA)","OBJECT_ID":"1998-067A","EPOCH":"2020-08-30T05:35:34.243872","MEAN_MOTION":15.49199437,"ECCENTRICITY":0.000186,"INCLINATION":51.647,"RA_OF_ASC_NODE":342.0279,"ARG_OF_PERICENTER":69.3228,"MEAN_ANOMALY":129.2061,"EPHEMERIS_TYPE":0,"CLASSIFICATION_TYPE":"U","NORAD_CAT_ID":25544,"ELEMENT_SET_NO":999,"REV_AT_EPOCH":24349,"BSTAR":3.9609e-5,"MEAN_MOTION_DOT":1.748e-5,"MEAN_MOTION_DDOT":0}'
+    celestrak_gp = '{"OBJECT_NAME":"ISS (ZARYA)","OBJECT_ID":"1998-067A","EPOCH":"2020-08-30T05:35:34.243872","MEAN_MOTION":15.49199437,"ECCENTRICITY":0.000186,"INCLINATION":51.647,"RA_OF_ASC_NODE":342.0279,"ARG_OF_PERICENTER":69.3228,"MEAN_ANOMALY":129.2061,"EPHEMERIS_TYPE":0,"CLASSIFICATION_TYPE":"U","NORAD_CAT_ID":25544,"ELEMENT_SET_NO":999,"REV_AT_EPOCH":24349,"BSTAR":3.9609e-5,"MEAN_MOTION_DOT":1.748e-5,"MEAN_MOTION_DDOT":0}'
 ```
 
 *Note:* in this example we use a ground perturbations that I searched on 30th of August, 2020, as you can see in the string. **If you use this exact string instead of making a new request to Celestrak and use the most recents orbital elements, the results will probably not be accurate.**
