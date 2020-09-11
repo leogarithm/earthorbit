@@ -2,6 +2,12 @@
 
 This package is aimed to track a satellite in orbit around Earth. It has been created in order to help small space centers (from universities for example) to do calculations for their cubesats. But you can use it in any way you want!
 
+## Downloading
+Using `pip`
+`pip install -i https://test.pypi.org/simple/ earthorbit`
+
+PyPI link: https://test.pypi.org/project/earthorbit/
+
 ## Depedencies
 Using `numpy` and `arrow`
 
