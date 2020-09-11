@@ -74,13 +74,13 @@ Description: # EarthOrbit Python package
         
         ```python
             for i in range(0, 60):
-            date = arrow.utcnow()
-            gps = iss.pos_gps(date)
-            print(date.isoformat())
-            print("ISS longitude: " + str(gps[1]) + "Â°")
-            print("ISS latitude: " + str(gps[2]) + "Â°")
-            print("----------------------")
-            time.sleep(1)
+                date = arrow.utcnow()
+                gps = iss.pos_gps(date)
+                print(date.isoformat())
+                print("ISS longitude: " + str(gps[1]) + "Â°")
+                print("ISS latitude: " + str(gps[2]) + "Â°")
+                print("----------------------")
+                time.sleep(1)
         ```
 Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3
