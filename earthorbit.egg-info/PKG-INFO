@@ -1,7 +1,7 @@
 Metadata-Version: 2.1
 Name: earthorbit
-Version: 0.0.1
-Summary: Lightweight package for orbit calculations for objets orbiting Earth.
+Version: 0.0.2
+Summary: Lightweight package for orbit calculations for satellites orbiting Earth.
 Home-page: https://github.com/leogarithm
 Author: Léo Giroud
 Author-email: grd.leo.99@gmail.com
@@ -9,6 +9,14 @@ License: UNKNOWN
 Description: # EarthOrbit Python package
         
         This package is aimed to track a satellite in orbit around Earth. It has been created in order to help small space centers (from universities for example) to do calculations for their cubesats. But you can use it in any way you want!
+        
+        ## Downloading
+        Using `pip`
+        ```
+        pip install -i https://test.pypi.org/simple/ earthorbit
+        ```
+        
+        PyPI link: https://test.pypi.org/project/earthorbit/
         
         ## Depedencies
         Using `numpy` and `arrow`
@@ -57,7 +65,7 @@ Description: # EarthOrbit Python package
             import arrow
             import time
         
-            orb_els = '{"OBJECT_NAME":"ISS (ZARYA)","OBJECT_ID":"1998-067A","EPOCH":"2020-08-30T05:35:34.243872","MEAN_MOTION":15.49199437,"ECCENTRICITY":0.000186,"INCLINATION":51.647,"RA_OF_ASC_NODE":342.0279,"ARG_OF_PERICENTER":69.3228,"MEAN_ANOMALY":129.2061,"EPHEMERIS_TYPE":0,"CLASSIFICATION_TYPE":"U","NORAD_CAT_ID":25544,"ELEMENT_SET_NO":999,"REV_AT_EPOCH":24349,"BSTAR":3.9609e-5,"MEAN_MOTION_DOT":1.748e-5,"MEAN_MOTION_DDOT":0}'
+            celestrak_gp = '{"OBJECT_NAME":"ISS (ZARYA)","OBJECT_ID":"1998-067A","EPOCH":"2020-08-30T05:35:34.243872","MEAN_MOTION":15.49199437,"ECCENTRICITY":0.000186,"INCLINATION":51.647,"RA_OF_ASC_NODE":342.0279,"ARG_OF_PERICENTER":69.3228,"MEAN_ANOMALY":129.2061,"EPHEMERIS_TYPE":0,"CLASSIFICATION_TYPE":"U","NORAD_CAT_ID":25544,"ELEMENT_SET_NO":999,"REV_AT_EPOCH":24349,"BSTAR":3.9609e-5,"MEAN_MOTION_DOT":1.748e-5,"MEAN_MOTION_DDOT":0}'
         ```
         
         *Note:* in this example we use a ground perturbations that I searched on 30th of August, 2020, as you can see in the string. **If you use this exact string instead of making a new request to Celestrak and use the most recents orbital elements, the results will probably not be accurate.**
@@ -82,9 +90,11 @@ Description: # EarthOrbit Python package
                 print("----------------------")
                 time.sleep(1)
         ```
+        
 Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3
 Classifier: License :: OSI Approved :: MIT License
 Classifier: Operating System :: OS Independent
+Classifier: Development Status :: 3 - Alpha
 Requires-Python: >=3.6
 Description-Content-Type: text/markdown

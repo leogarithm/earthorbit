@@ -90,6 +90,7 @@ class Orbit:
             "semi_major_axis": math.pow(Orbit.MU_EARTH/(mean_motion*mean_motion), 1/3)
         }
 
+        a = self.orbital_elements["semi_major_axis"]
         e = eccentricity
         ee = e*e
         eee = ee*e
@@ -99,6 +100,8 @@ class Orbit:
             2: 5/4*ee,
             3: 13/12*eee
         }
+
+        self.r_factor = a*(1 - ee)
 
         i_c = math.cos(inclination)
         i_s = math.sin(inclination)
@@ -174,8 +177,9 @@ class Orbit:
         :rtype: NumPy 3D array
         """
         # position of satellite in orbit plane (with z = 0)
-        x_orbitplane = self.orbital_elements["semi_major_axis"]*math.cos(true_anomaly)
-        y_orbitplane = self.orbital_elements["semi_minor_axis"]*math.sin(true_anomaly)
+        r = self.r_factor/(1 + self.orbital_elements["eccentricity"]*np.cos(true_anomaly))
+        x_orbitplane = r*math.cos(true_anomaly)
+        y_orbitplane = r*math.sin(true_anomaly)
 
         pos_plane = self.rotation_orbitplane.dot([x_orbitplane, y_orbitplane, 0])
 
