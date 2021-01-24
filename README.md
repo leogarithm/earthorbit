@@ -78,3 +78,7 @@ for s in sun_events:
     sunset = arrow.get(s["stop_unixepoch"])
     print("Daylight inside ISS from {} to {}!".format(sunrise, sunset))
 ```
+
+# What's next?
+- TLE propagator for more accurate predictions
+- More warnings and better algorithms to detect problems
