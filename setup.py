@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name = "earthorbit",
-    version = "0.1.0",
+    version = "0.1.1",
     author = "Léo Giroud",
     author_email = "grd.leo.99@gmail.com",
     description = "Lightweight package for orbit calculations for satellites orbiting Earth; Tools for generating commands and orientation.",

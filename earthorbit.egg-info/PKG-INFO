@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: earthorbit
-Version: 0.1.0
+Version: 0.1.1
 Summary: Lightweight package for orbit calculations for satellites orbiting Earth; Tools for generating commands and orientation.
 Home-page: https://github.com/leogarithm
 Author: Léo Giroud
@@ -86,6 +86,10 @@ Description: # EarthOrbit Python package
             sunset = arrow.get(s["stop_unixepoch"])
             print("Daylight inside ISS from {} to {}!".format(sunrise, sunset))
         ```
+        
+        # What's next?
+        - TLE propagator for more accurate predictions
+        - More warnings and better algorithms to detect problems
         
 Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3

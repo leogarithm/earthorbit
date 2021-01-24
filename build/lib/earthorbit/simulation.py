@@ -382,7 +382,7 @@ class Simulation:
                 ev["stop_unixepoch"] = self.step2unixepoch(step)
                 ev["duration_sec"] = ev["stop_unixepoch"] - ev["start_unixepoch"]
         else: # continue
-            if step == self.total_steps - 1: # if last step, end last simu
+            if step == self.total_steps - 1 and len(list_events) > 0: # if last step, end last simu
                 ev = list_events[-1]
                 if ev["stop_unixepoch"] == False:
                     ev["stop_unixepoch"] = self.stop_epoch.timestamp

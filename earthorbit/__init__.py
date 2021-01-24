@@ -4,3 +4,4 @@ from earthorbit.orbit import Orbit
 from earthorbit.simulation import Simulation
 from earthorbit.attitude import Attitude
 from earthorbit.macro import Macro
+from earthorbit.vts import Vts
