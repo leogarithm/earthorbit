@@ -5,10 +5,10 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name = "earthorbit",
-    version = "0.0.2",
+    version = "0.1.0",
     author = "Léo Giroud",
     author_email = "grd.leo.99@gmail.com",
-    description = "Lightweight package for orbit calculations for satellites orbiting Earth.",
+    description = "Lightweight package for orbit calculations for satellites orbiting Earth; Tools for generating commands and orientation.",
     long_description = long_description,
     long_description_content_type = "text/markdown",
     url = "https://github.com/leogarithm",
@@ -17,11 +17,14 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
-        'Development Status :: 3 - Alpha'
+        'Development Status :: 4 - Beta'
     ],
     install_requires= [
         "numpy",
-        "arrow"
+        "arrow",
+        "matplotlib",
+        "requests",
+        "pyquaternion"
     ],
     python_requires='>=3.6'
 )

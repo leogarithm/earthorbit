@@ -1,2 +1,5 @@
 numpy
 arrow
+matplotlib
+requests
+pyquaternion

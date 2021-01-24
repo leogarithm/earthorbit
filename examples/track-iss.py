@@ -11,10 +11,7 @@ import arrow
 import time
 import requests
 
-req = requests.get("https://celestrak.com/NORAD/elements/gp.php?CATNR=25544&FORMAT=JSON")
-print("Requested GP on Celestrak: {0}".format(req.text))
-iss = Orbit.from_celestrak_json(req.text)
-print("Orbit created with elements: {0}".format(iss.orbital_elements))
+iss = Orbit.from_celestrak_norad_cat_id(25544) 
 
 for i in range(0, 60):
     date = arrow.utcnow()

@@ -1,5 +1,6 @@
 import numpy as np
 import arrow
+import requests
 from typing import TypeVar, Generic
 
 import math 
@@ -37,6 +38,9 @@ class Orbit:
     from_state_vectors()
         Instantiate object from position and velocity vectors, at given epoch
     
+    from_celestrak_norad_cat_id()
+        Instantiate object from NORAD catalog ID by requesting TLE on Celestrak
+    
     get_mean_anomaly()
         Get mean anomaly (M) on the ellipse, at given epoch
     
@@ -55,7 +59,7 @@ class Orbit:
 
     MU_EARTH = 398600441800000.0 # [m^3/s^2]
 
-    def __init__(self, epoch: TypeVar_DateTime, eccentricity: float, inclination: float, ra_of_asc_node: float, arg_of_pericenter: float, mean_motion: float, mean_anomaly: float, name: str) -> None:
+    def __init__(self, epoch: TypeVar_DateTime, eccentricity: float, inclination: float, ra_of_asc_node: float, arg_of_pericenter: float, mean_motion: float, mean_anomaly: float, name: str, mm_taylor1=0.0, mm_taylor2=0.0) -> None:
         """
         Instantiate object.
 
@@ -67,6 +71,8 @@ class Orbit:
         :param mean_motion: mean motion value (units: radians per seconds)
         :param mean_anomaly: mean anomaly value (units: radians)
         :param name: name of satellite
+        :param mm_taylor1: first derivative for mean motion
+        :param mm_taylor2: second derivative/2 for mean motion
         :type epoch: Arrow object
         :type eccentricity: float
         :type inclination: float
@@ -75,6 +81,8 @@ class Orbit:
         :type mean_motion: float
         :type mean_anomaly: float
         :type name: string
+        :type mm_taylor1: float
+        :type mm_taylor2: float
         """
 
         self.epoch = epoch
@@ -87,21 +95,17 @@ class Orbit:
             "arg_of_pericenter": arg_of_pericenter,
             "mean_motion": mean_motion,
             "mean_anomaly": mean_anomaly,
-            "semi_major_axis": math.pow(Orbit.MU_EARTH/(mean_motion*mean_motion), 1/3)
+            "semi_major_axis": math.pow(Orbit.MU_EARTH/(mean_motion*mean_motion), 1/3),
+            "mm_taylor1": mm_taylor1,
+            "mm_taylor2": mm_taylor2
         }
 
         a = self.orbital_elements["semi_major_axis"]
         e = eccentricity
         ee = e*e
-        eee = ee*e
 
-        self.trueanomaly_formula_factors = {
-            1: 2*e - 0.25*eee,
-            2: 5/4*ee,
-            3: 13/12*eee
-        }
-
-        self.r_factor = a*(1 - ee)
+        self.rf = a*(1 - ee)
+        self.trueanomaly_factor = np.sqrt((1 + e)/(1 - e))
 
         i_c = math.cos(inclination)
         i_s = math.sin(inclination)
@@ -124,21 +128,24 @@ class Orbit:
 
         self.orbital_elements["time_at_periaster"] = epoch.timestamp - mean_anomaly/mean_motion # [s]
         self.orbital_elements["semi_minor_axis"] = self.orbital_elements["semi_major_axis"]*math.sqrt(1 - ee) # [m]
-        
     
     def compute_true_anomaly(self, mean_anomaly: float) -> float:
         """
-        Compute true anomaly (nu) for the given mean anomaly (M)
+        Compute true anomaly (ν) for the given mean anomaly (M)
 
         :param mean_anomaly: Mean anomaly, in radians [rad]
         :type mean_anomaly: float
         :returns: Corresponding true anomaly, in radians [rad]
         :rtype: float
         """
-        return (mean_anomaly 
-               + self.trueanomaly_formula_factors[1]*math.sin(mean_anomaly)
-               + self.trueanomaly_formula_factors[2]*math.sin(2*mean_anomaly)
-               + self.trueanomaly_formula_factors[3]*math.sin(3*mean_anomaly))
+        E = mean_anomaly
+        e = self.orbital_elements["eccentricity"]
+        for i in range(5): # compute excentric anomaly
+            E = e*np.sin(E) + mean_anomaly
+        tan_half_excentric = np.tan(0.5*E)
+        tan_half_nu = self.trueanomaly_factor*tan_half_excentric
+        nu = 2*np.arctan(tan_half_nu)
+        return nu
     
     def get_mean_anomaly(self, epoch: TypeVar_DateTime) -> float:
         """
@@ -149,15 +156,15 @@ class Orbit:
         :returns: Corresponding mean anomaly, in radians [rad]
         :rtype: float
         """
-        n = self.orbital_elements["mean_motion"]
-        t = self.orbital_elements["time_at_periaster"]
-
-        M = n*(epoch.timestamp - t)
+        n0 = self.orbital_elements["mean_motion"]
+        t = epoch.timestamp - self.orbital_elements["time_at_periaster"]
+        n = n0
+        M = n*t
         return M%Maths.TWOPI
     
     def get_true_anomaly(self, epoch: TypeVar_DateTime) -> float:
         """
-        Compute true anomaly (nu) at given epoch
+        Compute true anomaly (ν) at given epoch
 
         :param epoch: correspoding epoch
         :type epoch: Arrow object
@@ -169,7 +176,7 @@ class Orbit:
     
     def true_anomaly2gcrs(self, true_anomaly: float) -> TypeVar_NumPy3DArray:
         """
-        Compute position (in GCRS rectangular frame) corresponding to the given true anomaly (nu)
+        Compute position (in GCRS rectangular frame) corresponding to the given true anomaly (ν)
 
         :param true_anomaly: True anomaly
         :type true_anomaly: float
@@ -177,9 +184,9 @@ class Orbit:
         :rtype: NumPy 3D array
         """
         # position of satellite in orbit plane (with z = 0)
-        r = self.r_factor/(1 + self.orbital_elements["eccentricity"]*np.cos(true_anomaly))
-        x_orbitplane = r*math.cos(true_anomaly)
-        y_orbitplane = r*math.sin(true_anomaly)
+        radius = self.rf/(1 + self.orbital_elements["eccentricity"]*np.cos(true_anomaly))
+        x_orbitplane = radius*math.cos(true_anomaly)
+        y_orbitplane = radius*math.sin(true_anomaly)
 
         pos_plane = self.rotation_orbitplane.dot([x_orbitplane, y_orbitplane, 0])
 
@@ -198,7 +205,7 @@ class Orbit:
         nu = self.get_true_anomaly(epoch)
         return self.true_anomaly2gcrs(nu)
     
-    def pos_vel_gcrs(self, epoch: TypeVar_DateTime, dt=0.001) -> dict:
+    def pos_vel_gcrs(self, epoch: TypeVar_DateTime, dt=1) -> dict:
         """
         Compute position and velocity (in GCRS rectangular frame) corresponding at given epoch
 
@@ -393,14 +400,18 @@ class Orbit:
 
         epoch = arrow.get(time, "YY-DDD H:m:s")
 
-        inclination = float(second[8:16])
+        inclination = float(second[8:15])
         raan = float(second[17:24])
         eccentricity = float("0." + second[26:33])
         argp = float(second[34:42])
         mean_anomaly = float(second[43:51])
-        mean_motion = float(second[52:65])
+        mean_motion = TimeConversion.revperday2radpersec(float(second[52:65]))
+        mean_motion_taylor1 = 2*TimeConversion.revperday2radpersec(float(first[33:42]))/86400
+        str_mean_motion_taylor = first[45:52]
+        str_mean_motion_taylor = str_mean_motion_taylor[:5] + "e" + str_mean_motion_taylor[5:]
+        mean_motion_taylor2 = 3*TimeConversion.revperday2radpersec(float(str_mean_motion_taylor))/86400**2
 
-        return cls(epoch, eccentricity, inclination, raan, argp, mean_motion, mean_anomaly, name)
+        return cls(epoch, eccentricity, inclination, raan, argp, mean_motion, mean_anomaly, name, mm_taylor1=mean_motion_taylor1, mm_taylor2=mean_motion_taylor2)
     
     @classmethod
     def from_state_vectors(cls, pos: TypeVar_NumPy3DArray, vel: TypeVar_NumPy3DArray, epoch: TypeVar_DateTime, name="UNNAMED SATELLITE") -> object:
@@ -441,7 +452,7 @@ class Orbit:
             - 1/3*eee*np.sin(3*nu) 
             + 5/32*eeee*np.sin(4*nu))
 
-        return cls(epoch, np.rad2deg(i), np.rad2deg(raan), np.rad2deg(argp), n*86400/np.TWO_PI, np.rad2deg(M), "idk")
+        return cls(epoch, e, np.rad2deg(i), np.rad2deg(raan), np.rad2deg(argp), n*86400/Maths.TWOPI, np.rad2deg(M), "idk")
     
     @classmethod
     def from_celestrak_json(cls, stringified_json: str) -> object:
@@ -462,5 +473,27 @@ class Orbit:
         ra_of_asc_node = np.deg2rad(celestrak_json["RA_OF_ASC_NODE"])
         arg_of_pericenter = np.deg2rad(celestrak_json["ARG_OF_PERICENTER"])
         mean_anomaly = np.deg2rad(celestrak_json["MEAN_ANOMALY"])
-        mean_motion = celestrak_json["MEAN_MOTION"]*Maths.TWOPI/86400
-        return cls(epoch, eccentricity, inclination, ra_of_asc_node, arg_of_pericenter, mean_motion, mean_anomaly, name)
+        mean_motion = TimeConversion.revperday2radpersec(celestrak_json["MEAN_MOTION"])
+        mm_taylor1 = 2*TimeConversion.revperday2radpersec(celestrak_json["MEAN_MOTION_DOT"])/86400
+        mm_taylor2 = 3*TimeConversion.revperday2radpersec(celestrak_json["MEAN_MOTION_DDOT"])/86400**2
+        return cls(epoch, eccentricity, inclination, ra_of_asc_node, arg_of_pericenter, mean_motion, mean_anomaly, name, mm_taylor1=mm_taylor1, mm_taylor2=mm_taylor2)
+    
+    @classmethod
+    def from_celestrak_norad_cat_id(cls, id: int):
+        """
+            Creates an instance of Orbit object, from the latest GP found in Celestrak corresponding to id passed parameter.
+
+            :param id: NORAD catalog number of satellite
+            :type id: int
+            :returns: Orbit object
+        """
+        if not(0 < id < 1000000000):
+            raise ValueError("NORAD Catalog ID must be a 1 to 9 digit number!")
+
+        req = requests.get("https://celestrak.com/NORAD/elements/gp.php?CATNR={}&FORMAT=JSON".format(id))
+        res = req.text
+        
+        if (req == "No GP data found"):
+            raise ValueError("ID {} does not correspond to existing GP!".format(id))
+        else:
+            return Orbit.from_celestrak_json(res)

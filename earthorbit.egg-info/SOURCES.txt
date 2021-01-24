@@ -1,9 +1,14 @@
 README.md
 setup.py
 earthorbit/__init__.py
+earthorbit/attitude.py
+earthorbit/macro.py
 earthorbit/maths.py
 earthorbit/orbit.py
+earthorbit/orbitingobjects.py
+earthorbit/simulation.py
 earthorbit/timeconversion.py
+earthorbit/vts.py
 earthorbit.egg-info/PKG-INFO
 earthorbit.egg-info/SOURCES.txt
 earthorbit.egg-info/dependency_links.txt

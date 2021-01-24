@@ -1,0 +1,53 @@
+{
+    "0": {
+        "name": "BOOT",
+        "args": [
+            "uint8",
+            "float"
+        ]
+    },
+    "10101": {
+        "name": "TEST_FX",
+        "args": [
+            "uint8",
+            "float",
+            "bool"
+        ]
+    },
+    "111": {
+        "name": "ROT_WITH_QUATERNION",
+        "args": [
+            "float",
+            "float",
+            "float",
+            "float"
+        ]
+    },
+    "1234": {
+        "name": "HELLO_WORLD",
+        "args": []
+    },
+    "1": {
+        "name": "TAKE_PIC",
+        "args": [
+            "uint8"
+        ]
+    },
+    "2": {
+        "name": "SEND_PIC",
+        "args": [
+            "bool"
+        ]
+    },
+    "3": {
+        "name": "BEEP_BEEP",
+        "args": [
+            "int",
+            "int"
+        ]
+    },
+    "4": {
+        "name": "BOOP",
+        "args": []
+    }
+}

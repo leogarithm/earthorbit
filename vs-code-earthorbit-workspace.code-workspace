@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "earthorbit"
+		},
+		{
+			"path": "examples"
+		},
+		{
+			"path": "files"
+		}
+	],
+	"settings": {
+		"jupyter.jupyterServerType": "local"
+	}
+}

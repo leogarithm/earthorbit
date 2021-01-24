@@ -1,0 +1,26 @@
+[
+    {
+        "name":"center", 
+        "lon":0,
+        "lat":0,
+        "distance":6378137,
+        "semi_angle_visibility":3.141592653589793,
+        "color":"#3030a0"
+    },
+    {
+        "name":"north",
+        "lon":0,
+        "lat":90,
+        "distance":6378137,
+        "semi_angle_visibility":3.141592653589793,
+        "color":"#3030a0"
+    },
+    {
+        "name":"east",
+        "lon":90,
+        "lat":0,
+        "distance":6378137,
+        "semi_angle_visibility":3.141592653589793,
+        "color":"#3030a0"
+    }
+]

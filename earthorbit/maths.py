@@ -1,8 +1,11 @@
 import math
-import numpy as np
 from typing import TypeVar, Generic
 
+import numpy as np
+import pyquaternion
+
 NumPy3DArray = TypeVar("NumPy 3D array")
+NumPy4DArray = TypeVar("NumPy 4D array")
 NumPy3x3Matrix = TypeVar("NumPy 3x3 matrix")
 DateTime = TypeVar("datetime object")
 
@@ -30,12 +33,15 @@ class Maths:
         :param w: NumPy 3D vector
         :return: Angle, in radians, between v and w
         """
-        d = w.dot(v)
-        vnorm = np.linalg.norm(v)
-        wnorm = np.linalg.norm(w)
-        prod_norms = vnorm*wnorm
-        cos_angle = d/prod_norms
-        return np.arccos(cos_angle)
+        if np.all(v != w):
+            d = w.dot(v)
+            vnorm = np.linalg.norm(v)
+            wnorm = np.linalg.norm(w)
+            prod_norms = vnorm*wnorm
+            cos_angle = np.clip(d/prod_norms, -1, 1)
+            return np.arccos(cos_angle)
+        else:
+            return 0
 
     @staticmethod
     def rectangular2spherical(rect_coords: NumPy3DArray) -> NumPy3DArray:
@@ -92,6 +98,25 @@ class Maths:
         :param remaining_decimals: the number of remaining decimals wanted for the number
         :returns: the number truncated
         """
-        tenpowpos = 10**remaining_decimals
-        tenpowneg = 10**(-remaining_decimals)
+        tenpowpos = 1
+        for i in range(0, remaining_decimals):
+            tenpowpos *= 10
+        tenpowneg = 1/tenpowpos
         return float(int(nb*tenpowpos))*tenpowneg
+    
+    @staticmethod
+    def get_rot_quat(start: NumPy3DArray, target: NumPy3DArray):
+        """
+            returns the rotation quaternion to make in order to go from 'start' to 'target'
+            q = w + ix + jy + kz
+        """
+        angle = Maths.angle_vects(start, target)
+        dir_rot = np.cross(start, target)
+        return pyquaternion.Quaternion(axis=dir_rot, radians=angle)
+    
+    @staticmethod
+    def get_orientation_quat(vec: NumPy3DArray):
+        """
+            From a 3D direction 'vec' in space, returns its quaternion orientation, aka the rotation from x axis to 'vec'.
+        """
+        return Maths.get_rot_quat(np.array([1, 0, 0]), vec)
